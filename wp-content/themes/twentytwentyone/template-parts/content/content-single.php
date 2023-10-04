@@ -8,13 +8,13 @@
  * @subpackage Twenty_Twenty_One
  * @since Twenty Twenty-One 1.0
  */
-
+$disable_post_heading = get_post_meta(get_the_ID(), '_disable_post_heading', true);
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 
 	<header class="entry-header alignwide">
-		<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
+		<?php if (!$disable_post_heading) {the_title( '<h1 class="entry-title">', '</h1>' );} ?>
 		<?php twenty_twenty_one_post_thumbnail(); ?>
 	</header><!-- .entry-header -->
 

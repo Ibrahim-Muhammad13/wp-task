@@ -650,3 +650,38 @@ if ( ! function_exists( 'wp_get_list_item_separator' ) ) :
 		return __( ', ', 'twentytwentyone' );
 	}
 endif;
+function add_custom_meta_box() {
+    add_meta_box(
+        'disable_post_heading',
+        'Disable Post Heading',
+        'render_disable_post_heading_meta_box',
+        'post', 
+        'side',
+    );
+}
+add_action('add_meta_boxes', 'add_custom_meta_box');
+
+function render_disable_post_heading_meta_box($post) {
+    // Retrieve the current meta value (if any).
+    $disable_post_heading = get_post_meta($post->ID, '_disable_post_heading', true);
+
+    // Output the checkbox.
+    ?>
+    <label for="disable_post_heading">
+        <input type="checkbox" name="disable_post_heading" id="disable_post_heading" value="1" <?php checked($disable_post_heading, '1'); ?> />
+        Disable the post heading
+    </label>
+    <?php
+}
+
+function save_disable_post_heading_meta_box($post_id) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+
+    // Save the checkbox value.
+    if (isset($_POST['disable_post_heading'])) {
+        update_post_meta($post_id, '_disable_post_heading', '1');
+    } else {
+        delete_post_meta($post_id, '_disable_post_heading');
+    }
+}
+add_action('save_post', 'save_disable_post_heading_meta_box');
