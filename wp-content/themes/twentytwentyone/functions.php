@@ -650,38 +650,57 @@ if ( ! function_exists( 'wp_get_list_item_separator' ) ) :
 		return __( ', ', 'twentytwentyone' );
 	}
 endif;
-function add_custom_meta_box() {
-    add_meta_box(
-        'disable_post_heading',
-        'Disable Post Heading',
-        'render_disable_post_heading_meta_box',
-        'post', 
-        'side',
+
+// custom post type and registering meta box for it
+
+function create_custom_post_type() {
+    register_post_type('books',
+        array(
+            'labels' => array(
+                'name' => __('Books'),
+                'singular_name' => __('Book')
+            ),
+            'public' => true,
+            'has_archive' => true,
+            'supports' => array('title', 'editor', 'thumbnail', 'custom-fields')
+        )
     );
 }
-add_action('add_meta_boxes', 'add_custom_meta_box');
+add_action('init', 'create_custom_post_type');
 
-function render_disable_post_heading_meta_box($post) {
-    // Retrieve the current meta value (if any).
-    $disable_post_heading = get_post_meta($post->ID, '_disable_post_heading', true);
 
-    // Output the checkbox.
-    ?>
-    <label for="disable_post_heading">
-        <input type="checkbox" name="disable_post_heading" id="disable_post_heading" value="1" <?php checked($disable_post_heading, '1'); ?> />
-        Disable the post heading
+function add_title_visibility_meta_box() {
+    add_meta_box(
+        'title_visibility_meta_box',
+        'Title Visibility',
+        'render_title_visibility_meta_box',
+        'books', 
+        'side',
+        'default'
+    );
+}
+add_action('add_meta_boxes', 'add_title_visibility_meta_box');
+
+function render_title_visibility_meta_box($post) {
+
+    $title_visibility = get_post_meta($post->ID, '_title_visibility', true);
+    
+	?>
+    <label for="title_visibility">
+        <input type="checkbox" name="title_visibility" id="title_visibility" value="hidden" <?php checked($title_visibility, 'hidden'); ?> />
+        Hide the title
     </label>
     <?php
 }
 
-function save_disable_post_heading_meta_box($post_id) {
+function save_title_visibility_meta_box($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-
-    // Save the checkbox value.
-    if (isset($_POST['disable_post_heading'])) {
-        update_post_meta($post_id, '_disable_post_heading', '1');
-    } else {
-        delete_post_meta($post_id, '_disable_post_heading');
+    if ('books' === get_post_type($post_id)) {
+        if (isset($_POST['title_visibility']) && $_POST['title_visibility'] === 'hidden') {
+            update_post_meta($post_id, '_title_visibility', 'hidden');
+        } else {
+            delete_post_meta($post_id, '_title_visibility');
+        }
     }
 }
-add_action('save_post', 'save_disable_post_heading_meta_box');
+add_action('save_post', 'save_title_visibility_meta_box');

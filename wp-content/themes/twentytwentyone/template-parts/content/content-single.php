@@ -1,20 +1,24 @@
 <?php
 /**
  * Template part for displaying posts
- *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
+ *
  *
  * @package WordPress
  * @subpackage Twenty_Twenty_One
  * @since Twenty Twenty-One 1.0
  */
-$disable_post_heading = get_post_meta(get_the_ID(), '_disable_post_heading', true);
+$title_visibility = get_post_meta(get_the_ID(), '_title_visibility', true);
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 
 	<header class="entry-header alignwide">
-		<?php if (!$disable_post_heading) {the_title( '<h1 class="entry-title">', '</h1>' );} ?>
+		<?php 
+		if ($title_visibility !== 'hidden') {
+		the_title( '<h1 class="entry-title">', '</h1>' ); 
+		}
+		?>
 		<?php twenty_twenty_one_post_thumbnail(); ?>
 	</header><!-- .entry-header -->
 
